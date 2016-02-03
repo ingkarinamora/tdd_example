@@ -1,6 +1,6 @@
-from random import randint
+import copy
 
-from nose.tools import assert_false, assert_true
+from nose.tools import assert_false, assert_true, assert_equals
 
 from tdd_example.app.utils.input_validator import InputValidator
 
@@ -10,68 +10,79 @@ class TestInputValidator():
     def setup(self):
         self.validator = InputValidator()
 
-    def test_should_return_false_if_type_is_invalid(self):
+    def test_should_return_identifier_type_error_message_if_identifier_type_is_invalid(self):
+        #arrange
+        invalid_input = self.__create_default_input(identifier_type='invalid type')
         # act
-        result = self.validator.validate_customer_type('invalid type')
+        result = self.validator.validate_input(invalid_input)
 
-        # assert
-        assert_false(result)
+        #assert
+        assert_equals({"is_valid": False, "errors": ["Identifier type is invalid"]}, result)
 
-    def test_should_return_true_if_type_is_cedula(self):
+    def test_should_return_is_valid_if_type_cedula(self):
+        #arrange
+        valid_input = self.__create_default_input(identifier_type='cedula')
         # act
-        result = self.validator.validate_customer_type('cedula')
+        result = self.validator.validate_input(valid_input)
 
-        # assert
-        assert_true(result)
+        #assert
+        assert_equals({"is_valid": True, "errors": []}, result)
 
-    def test_should_return_true_if_type_is_ruc(self):
+    def test_should_return_is_valid_if_type_ruc(self):
+        #arrange
+        valid_input = self.__create_default_input(identifier_type='ruc')
         # act
-        result = self.validator.validate_customer_type('ruc')
+        result = self.validator.validate_input(valid_input)
 
-        # assert
-        assert_true(result)
+        #assert
+        assert_equals({"is_valid": True, "errors": []}, result)
 
-    def test_should_return_true_if_type_is_ruc(self):
+    def test_should_return_identifier_type_error_message_if_cedula_identifier_has_only_9_digits(self):
+        #arrange
+        invalid_input = self.__create_default_input(identifier='123456789')
         # act
-        result = self.validator.validate_customer_type('ruc')
+        result = self.validator.validate_input(invalid_input)
 
-        # assert
-        assert_true(result)
+        #assert
+        assert_equals({"is_valid": False, "errors": ["Identifier is invalid for the given type"]}, result)
 
-    def test_should_return_false_if_cedula_has_only_9_digits(self):
+    def test_should_return_identifier_type_error_message_if_cedula_identifier_has_a_letter(self):
+        #arrange
+        invalid_input = self.__create_default_input(identifier='1234E67890')
         # act
-        result = self.validator.validate_cedula('123456789')
+        result = self.validator.validate_input(invalid_input)
 
-        # assert
-        assert_false(result)
+        #assert
+        assert_equals({"is_valid": False, "errors": ["Identifier is invalid for the given type"]}, result)
 
-    def test_should_return_false_if_cedula_has_a_letter(self):
+    def test_should_return_identifier_type_error_message_if_cedula_first_two_digits_are_greater_than_24(self):
+        #arrange
+        invalid_input = self.__create_default_input(identifier='2534567890')
         # act
-        result = self.validator.validate_cedula('1234E67890')
+        result = self.validator.validate_input(invalid_input)
 
-        # assert
-        assert_false(result)
+        #assert
+        assert_equals({"is_valid": False, "errors": ["Identifier is invalid for the given type"]}, result)
+
+    def test_should_return_identifier_type_error_message_if_cedula_first_two_digits_are_00(self):
+        #arrange
+        invalid_input = self.__create_default_input(identifier='0034567890')
+        # act
+        result = self.validator.validate_input(invalid_input)
+
+        #assert
+        assert_equals({"is_valid": False, "errors": ["Identifier is invalid for the given type"]}, result)
+
 
     def test_should_return_true_if_cedula_has_only_10_digits(self):
+        #arrenge
+        valid_input = self.__create_default_input(identifier='1234567890')
         # act
-        result = self.validator.validate_cedula('1234567890')
+        result = self.validator.validate_input(valid_input)
 
         # assert
-        assert_true(result)
+        assert_equals({"is_valid": True, "errors": []}, result)
 
-    def test_should_return_false_if_first_two_digits_are_greater_than_24(self):
-        # act
-        result = self.validator.validate_cedula('2534567890')
-
-        # assert
-        assert_false(result)
-
-    def test_should_return_false_if_first_two_digits_are_00(self):
-        # act
-        result = self.validator.validate_cedula('0034567890')
-
-        # assert
-        assert_false(result)
 
     def test_should_return_true_if_first_two_digits_are_between_1_to_24(self):
 
@@ -80,29 +91,58 @@ class TestInputValidator():
             zero = '0' if first_digits_number < 10 else ''
             cedula = '{0}{1}34567890'.format(zero, first_digits_number)
 
+            valid_input = self.__create_default_input(identifier=cedula)
+
             # act
-            result = self.validator.validate_cedula(cedula)
+            result = self.validator.validate_input(valid_input)
 
             # assert
-            assert_true(result)
+            assert_equals({"is_valid": True, "errors": []}, result)
 
     def test_should_return_false_if_first_name_is_empty_string(self):
+        #arrange
+        valid_input = self.__create_default_input(name="")
         #act
-        result = self.validator.validate_non_empty_letters_string('')
+        result = self.validator.validate_input(valid_input)
 
         # assert
-        assert_false(result)
+        assert_equals({"is_valid": False, "errors": ["Name should not be empty"]}, result)
 
     def test_should_return_false_if_first_name_is_none(self):
+        #arrange
+        valid_input =  self.__create_default_input(name=None)
         #act
-        result = self.validator.validate_non_empty_letters_string(None)
+        result = self.validator.validate_input(valid_input)
 
         # assert
-        assert_false(result)
+        assert_equals({"is_valid": False, "errors": ["Name should not be empty"]}, result)
+
 
     def test_should_return_true_if_string_is_Karina(self):
+        #arrange
+        valid_input =  self.__create_default_input(name="Karina Mora")
         #act
-        result = self.validator.validate_non_empty_letters_string('Karina')
+        result = self.validator.validate_input(valid_input)
 
         # assert
-        assert_true(result)
+        assert_equals({"is_valid": True, "errors": []}, result)
+
+    def test_should_return_error_if_input_is_incomplete(self):
+        #arrange
+        input = {}
+
+        #act
+        result = self.validator.validate_input(input)
+
+        # assert
+        assert_equals({"is_valid": False, "errors": ["Input is incomplete"]}, result)
+
+    def __create_default_input(self, identifier_type='cedula',
+                               identifier='1712345670',
+                               name='Someone Valid'):
+        return {
+            'identifier_type': identifier_type,
+            'identifier': identifier,
+            'name': name,
+            'deposit': 200
+        }
