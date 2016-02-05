@@ -1,19 +1,30 @@
 class InputValidator():
+    _error_messages = {
+        "incomplete_input_error": "Input is incomplete",
+        "identifier_type_error": "Identifier type is invalid",
+        "identifier_error": "Identifier is invalid for the given type",
+        "name_error": "Name should not be empty",
+        "deposit_error": "Deposit should be at least $200"
+    }
+
 
     def validate_input(self, input):
         errors = []
 
-        if all([key not in input for key in ['identifier_type', 'identifier', 'name']]):
-            return self.__create_validity_response(["Input is incomplete"])
+        if all([key not in input for key in ["identifier_type", "identifier", "name"]]):
+            return self.__create_validity_response([self._error_messages["incomplete_input_error"]])
 
         if not self.__validate_identifier_type(input.get("identifier_type")):
-            errors.append("Identifier type is invalid")
+            errors.append(self._error_messages["identifier_type_error"])
 
         if not self.__validate_cedula(input.get("identifier")):
-            errors.append("Identifier is invalid for the given type")
+            errors.append(self._error_messages["identifier_error"])
 
         if not self.__validate_non_empty_letters_string(input.get("name")):
-            errors.append("Name should not be empty")
+            errors.append(self._error_messages["name_error"])
+
+        if not self.__validate_deposit_amount(input.get("deposit")):
+            errors.append(self._error_messages["deposit_error"])
 
         return self.__create_validity_response(errors)
 
@@ -27,6 +38,9 @@ class InputValidator():
         if first_name:
             return True
         return False
+
+    def __validate_deposit_amount(self, amount):
+        return amount >= 200
 
     def __create_validity_response(self, error=None):
 
