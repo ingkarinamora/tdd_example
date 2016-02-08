@@ -1,15 +1,16 @@
 import copy
 
 from nose.tools import assert_false, assert_true, assert_equals
-from numpy.testing import assert_array_equal
-
 from tdd_example.app.utils.input_validator import InputValidator
+from tdd_example.app.utils.input_validator import ValidateIdentifierType
+
 
 
 class TestInputValidator():
 
     def setup(self):
         self.validator = InputValidator()
+        self.validateIdentifierType = ValidateIdentifierType()
 
     def test_should_return_identifier_type_error_message_if_identifier_type_is_invalid(self):
         #arrange
@@ -156,7 +157,7 @@ class TestInputValidator():
 
         # assert
         assert_false(result["is_valid"])
-        assert_array_equal(sorted(["Deposit should be at least $200", "Name should not be empty"]), sorted(result["errors"]))
+        assert_equals(sorted(["Deposit should be at least $200", "Name should not be empty"]), sorted(result["errors"]))
 
 
     def __create_default_input(self, identifier_type="cedula",
