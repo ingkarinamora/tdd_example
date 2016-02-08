@@ -2,7 +2,6 @@ import copy
 
 from nose.tools import assert_false, assert_true, assert_equals
 from tdd_example.app.utils.input_validator import InputValidator
-from tdd_example.app.utils.input_validator import ValidateIdentifierType
 
 
 
@@ -10,7 +9,6 @@ class TestInputValidator():
 
     def setup(self):
         self.validator = InputValidator()
-        self.validateIdentifierType = ValidateIdentifierType()
 
     def test_should_return_identifier_type_error_message_if_identifier_type_is_invalid(self):
         #arrange
