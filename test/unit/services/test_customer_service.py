@@ -16,3 +16,15 @@ class TestCustomerService():
         response = service.save_customer('invalid_input')
 
         assert_equals(validator_error_response, response)
+
+    def test_should_save_customer_information_if_input_is_valid(self):
+        # arrange
+        validator = Mock()
+        repository = Mock()
+        valid_response = {'is_valid': True, 'errors': []}
+        validator.validate_input.return_value = valid_response
+
+        service = CustomerService(validator, repository)
+        service.save_customer('valid_input')
+
+        assert repository.save.called()

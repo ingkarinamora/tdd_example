@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class ErrorValiate(Exception):
+class ErrorValidate(Exception):
 
     def __init__(self, value):
          self.value = value
@@ -21,7 +21,7 @@ class ValidateIdentifierType(IValidate):
     def validate(self, input):
         customer_type = input["identifier_type"]
         if not customer_type in ["cedula", "ruc"]:
-            raise ErrorValiate(InputValidator._error_messages["identifier_type_error"])
+            raise ErrorValidate(InputValidator._error_messages["identifier_type_error"])
         return True
 
 
@@ -29,7 +29,7 @@ class ValidateCedula(IValidate):
     def validate(self, input):
         cedula = input["identifier"]
         if not (len(cedula) == 10 and cedula.isdigit() and 0 < int(cedula[:2]) < 25):
-            raise ErrorValiate(InputValidator._error_messages["identifier_error"])
+            raise ErrorValidate(InputValidator._error_messages["identifier_error"])
         return True
 
 
@@ -37,7 +37,7 @@ class ValidateNonEmptyLettersString(IValidate):
     def validate(self, input):
         name = input["name"]
         if not name:
-            raise ErrorValiate(InputValidator._error_messages["name_error"])
+            raise ErrorValidate(InputValidator._error_messages["name_error"])
         return True
 
 
@@ -46,7 +46,7 @@ class ValidateDepositAmount(IValidate):
     def validate(self, input):
         amount = input["deposit"]
         if not amount >= 200:
-            raise ErrorValiate(InputValidator._error_messages["deposit_error"])
+            raise ErrorValidate(InputValidator._error_messages["deposit_error"])
         return True
 
 
@@ -70,7 +70,7 @@ class InputValidator():
         for val in validators:
             try:
                 val.validate(input)
-            except ErrorValiate as error_validate:
+            except ErrorValidate as error_validate:
                 errors.append(error_validate.value)
 
 
