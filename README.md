@@ -44,3 +44,9 @@ giving the appropriate response.
   Passport
   RUC
 - An identifier number that should have a valid structure for each type
+
+Tech stuff:
+- docker build -t debian-mongo .
+- docker run -it --entrypoint=/bin/bash debian-mongo
+- docker ps
+- docker exec -t -i [IMAGE_NAME] /bin/bash
